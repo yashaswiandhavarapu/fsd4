@@ -1,0 +1,23 @@
+const express = require("express");
+const session = require("express-session");
+const app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(session({ secret: "abc", resave: false, saveUninitialized: true }));
+
+app.get("/", (r, s) =>
+  s.send(`<form method="post"><input name="user"/><input type="password" name="pass"/><button>Login</button></form>`)
+);
+
+app.post("/", (r, s) => {
+  if (r.body.user == "admin" && r.body.pass == "1234") {
+    r.session.user = r.body.user;
+    s.cookie("login", "true").send("Login success!");
+  } else s.send("Invalid credentials");
+});
+
+app.get("/home", (r, s) => {
+  if (r.session.user) s.send("Welcome " + r.session.user);
+  else s.send("Please login first");
+});
+
+app.listen(3000, () => console.log("Server running"));
