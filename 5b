@@ -1,0 +1,29 @@
+const express = require("express");
+const app = express();
+app.use(express.json());
+
+let data = [{ id: 1, name: "Item1" }];
+
+// READ
+app.get("/items", (r, s) => s.json(data));
+
+// CREATE
+app.post("/items", (r, s) => {
+  data.push(r.body);
+  s.send("Item added");
+});
+
+// UPDATE
+app.put("/items/:id", (r, s) => {
+  let i = data.findIndex(x => x.id == r.params.id);
+  data[i] = r.body;
+  s.send("Item updated");
+});
+
+// DELETE
+app.delete("/items/:id", (r, s) => {
+  data = data.filter(x => x.id != r.params.id);
+  s.send("Item deleted");
+});
+
+app.listen(3000, () => console.log("CRUD server running"));
